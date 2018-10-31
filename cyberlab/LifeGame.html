@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body bgcolor="#222222">
+  <div style="position: absolute; right: 1%;">
+   <canvas id="layer1" width="200" height="200" style="position: relative; left: 0; top: 0; z-index: 0;"></canvas>
+  </div>
+  <button class="myDiv" id="div1" onclick="divFunctiont()" style="text/css">Conway's Life Game</button>
+<style type="text/css">
+.myDiv{
+  width: 500px;
+  height: 100px;
+  background: none;
+  border: none;
+  color:#DDDDDD;
+  font-size: 30px;
+  text-align: left;
+  line-height: 100px;
+  position: absolute;
+  left: 8%;
+  top: 95%;
+  margin: -100px 0 0 -100px;
+  font-family: "raphaelicons";
+  text-shadow:2px 2px 2px rgba(151,24,64,0.2);
+  z-index: 1000
+ }
+</style> 
+
+  <script>
+  var balls=[];
+  const colors = ["#308BA1","#FBD26B","#222222","#4D5AAF","#8491C3","#679876","#9DC357","#D4ACAD","#D74B22","#E83929"]
+  window.onload=function(){
+  	var layer1=document.getElementById("layer1");
+  	layer1.width=1500;
+  	layer1.height=900;
+              var context1=layer1.getContext("2d");
+              var ballw = 74
+              var ballh = 44
+              var ballr = 7
+              var ballinter = 20
+  for(var i = 1; i <= ballw; i++){
+      for(var j = 1; j <= ballh; j++){
+      addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[Math.floor((Math.random() * 2) + 1)]);
+      // if(i == 1 && j == 1){addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[1]);}
+      // else if(i == 1 && j == 2){addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[1]);}
+      // else if(i == 3 && j == 2){addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[1]);}
+      // else if(i == 1 && j == 3){addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[1]);}
+      // else if(i == 2 && j == 3){addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[1]);}
+      // else{addBall(x=i*ballinter, y=j*ballinter, r=ballr, color=colors[2]);}
+      }
+  }
+  setInterval(
+  	function(){
+                  render1(context1);
+                  update()
+  		},
+  	    500
+  	)
+  }
+  function update(){
+    var ballw = 74
+    var ballh = 44
+    for(var i = 0; i < ballw; i++){
+      for(var j = 0; j < ballh; j++){
+         var neighbor = 0
+         var ic = 0
+         var jc = 0
+         if(i > 0){ic = i}
+         if(j > 0){jc = j}
+         if(i == 0){ic = ballw}
+         if(j == 0){jc = ballh}
+         if(balls[(ic%ballw)*ballh+(jc+1)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[(ic%ballw)*ballh+(jc-1)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[((ic+1)%ballw)*ballh+(jc)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[((ic-1)%ballw)*ballh+(jc)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[((ic-1)%ballw)*ballh+(jc-1)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[((ic-1)%ballw)*ballh+(jc+1)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[((ic+1)%ballw)*ballh+(jc-1)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[((ic+1)%ballw)*ballh+(jc+1)%ballh].color ==colors[1]){neighbor += 1}
+         if(balls[(i%ballw)*ballh+j%ballh].color ==colors[1] && neighbor >3){balls[(i%ballw)*ballh+j%ballh].colorback = colors[2]}
+         if(balls[(i%ballw)*ballh+j%ballh].color ==colors[1] && neighbor <2){balls[(i%ballw)*ballh+j%ballh].colorback = colors[2]}
+         if(balls[(i%ballw)*ballh+j%ballh].color ==colors[1] && neighbor ==3){balls[(i%ballw)*ballh+j%ballh].colorback = colors[1]}
+         if(balls[(i%ballw)*ballh+j%ballh].color ==colors[1] && neighbor ==2){balls[(i%ballw)*ballh+j%ballh].colorback = colors[1]}
+         if(balls[(i%ballw)*ballh+j%ballh].color ==colors[2] && neighbor==3){balls[(i%ballw)*ballh+j%ballh].colorback = colors[1]}
+         if(balls[(i%ballw)*ballh+j%ballh].color ==colors[2] && neighbor!=3){balls[(i%ballw)*ballh+j%ballh].colorback = colors[2]}
+      }
+  }
+    for(var i = 0; i < ballw; i++){
+      for(var j = 0; j < ballh; j++){
+        balls[(i%ballw)*ballh+j%ballh].color = balls[(i%ballw)*ballh+j%ballh].colorback
+      }
+    }
+  }
+
+  function addBall(xs, ys, rs, colorset){
+      var aBall={
+           x:xs,
+           y:ys,
+           r:rs,
+           color:colorset,
+           colorback:colorset
+      	    }
+      balls.push(aBall)
+  }
+
+  function render1(cxt){
+   cxt.clearRect(0,0,cxt.canvas.width,cxt.canvas.height)
+   for(var i=0;i<balls.length;i++){
+        cxt.fillStyle=balls[i].color;
+        //if(i == 1*74+44){alert(balls[i].color)}
+        cxt.beginPath();
+        cxt.arc(balls[i].x,balls[i].y,balls[i].r*1,0,2*Math.PI,true);
+        //cxt.fillRect(balls[i].x-balls[i].r+3,balls[i].y-balls[i].r+3,balls[i].x+balls[i].r-3,balls[i].y+balls[i].r-3)
+        cxt.closePath();
+        cxt.fill();
+   }
+  }
+
+</script>
+</body>
+</html>

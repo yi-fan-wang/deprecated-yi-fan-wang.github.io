@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <script type="text/javascript" src="webgl-utils.js"></script>
+    <script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>
+    <script src="https://raw.github.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+    <script src="Tween.js"></script>
+    <meta charset="UTF-8">
+    <title>WebGL</title>
+<style type="text/css">
+    div#canvas-frame {
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        height: 900px;
+        background-color: #EEEEEE;
+    }
+
+</style>
+<!--     <canvas id="canvas"  style="display:block;margin:0px auto;width:100%;height:100%;"></canvas> -->
+<script>
+        var scene;
+        function initScene() {
+            scene = new THREE.Scene();
+        }
+
+        var light;
+        function initLight() {
+            light = new THREE.AmbientLight(0x655ea6,1);
+            light.position.set(0, 30, 0);
+            scene.add(light);
+            light = new THREE.PointLight(0xfd8d3c,1);
+            light.position.set(-10, -10, 0);
+            scene.add(light);
+        }
+
+        var camera;
+        function initCamera() {
+            camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+            camera.position.x = 0;
+            camera.position.y = 0;
+            camera.position.z = 100;
+            camera.up.x = 0;
+            camera.up.y = 0;
+            camera.up.z = 0;
+            camera.lookAt({
+                x : 0,
+                y : 0,
+                z : 0
+            });
+        }
+
+        // var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+        var renderer;
+        var stats;
+        function initThree() {
+            width = document.getElementById('canvas-frame').clientWidth;
+            height = document.getElementById('canvas-frame').clientHeight;
+            renderer = new THREE.WebGLRenderer({
+                antialias : true
+            });
+            renderer.setSize(width, height);
+            document.getElementById('canvas-frame').appendChild(renderer.domElement);
+            renderer.setClearColor(0xFFFFFF, 1.0);
+            stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            document.getElementById('canvas-frame').appendChild(stats.domElement);
+        }
+
+        // var renderer = new THREE.WebGLRenderer();
+        // renderer.setSize(window.innerWidth, window.innerHeight);
+        // document.body.appendChild(renderer.domElement);
+
+        var lines = [];
+        var linevx = [];
+        var linevy = [];
+        var line;
+        var geometry;
+        function initObject() {
+            geometry = new THREE.Geometry();
+            box = new THREE.Geometry();
+            var material = new THREE.LineBasicMaterial( { vertexColors: true}, {Linewidth:3} );
+            // var mat = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side: THREE.DoubleSide})
+            var color1 = new THREE.Color( 0xf4fbed ), color2 = new THREE.Color( 0x509ca0 ), color3 = new THREE.Color( 0x655ea6 ), color4 = new THREE.Color(0x69aed6), color0 = new THREE.Color( 0xffffff );
+
+            var p1 = new THREE.Vector3( 0, 0, 0 );
+            var p2 = new THREE.Vector3( 1, 0, 0 );
+            geometry.vertices.push(p1);
+            geometry.vertices.push(p2);
+            geometry.colors.push( color1, color2 );
+            for (var i = 0; i <= 32; i++) {
+            for (var j = 0; j <= 32; j++) {
+            line = new THREE.Line( geometry, material, THREE.LineSegments );
+            line.position.x = ( i * 1 ) - 60;
+            line.position.y = ( j * 1 ) - 30;
+            line.rotation.z = 45 * Math.PI / 180;
+            scene.add(line);
+            lines.push(line);
+            linevx.push(Math.random()*0.1);
+            linevy.push(Math.random()*0.01);
+            };
+            };
+        // var b1 = new THREE.Vector3(0, 0, 0);
+        // var b2 = new THREE.Vector3(150, 0, 0);
+        // box.vertices.push(b1);
+        // box.vertices.push(b2);
+        // box.colors.push( color3, color4 );
+        // var border = new THREE.Line( box, material, THREE.LineSegments );
+        // border.position.x = -75;
+        // border.position.y = -40;
+        // scene.add(border);
+        }
+
+        function initTween()
+        {
+            new TWEEN.Tween(line.position)
+                    .to( { x: -220 }, 3000 ).repeat( Infinity ).start();
+        }
+        var g = -0.01;
+        var a = 0.00001;
+        var r = 1;
+        var boxh = 40;
+        var boxw = 75;
+        function anime() {
+            requestAnimationFrame(anime);
+            // lines[0].position.x+=linevx[0];
+for(var i = 0; i < lines.length; i++){
+        lines[i].position.x+=linevx[i];
+        lines[i].position.y+=linevy[i];
+        lines[i].rotation.z = Math.asin(linevy[i]/Math.sqrt(Math.pow(linevy[i],2)+Math.pow(linevx[i],2)));
+        linevy[i] += g;
+
+    if(lines[i].position.y>=boxh-r){
+            lines[i].position.y=boxh-r
+            linevy[i]=-0.99*linevy[i]
+        }
+        if(lines[i].position.x>=boxw-r){
+            lines[i].position.x=boxw-r
+            linevx[i]=-0.99*linevx[i]
+        }
+        if(lines[i].position.y<=-boxh+r){
+            lines[i].position.y=-boxh+r
+            linevy[i]=-0.99*linevy[i]
+        }
+        if(lines[i].position.x<=-boxw+r){
+            lines[i].position.x=-boxw+r
+            linevx[i]=-0.99*linevx[i]
+        }
+    }
+
+  var r2 = Math.pow((r+r),2)
+  var wx = []
+  var meanwx = 0
+  var wy = []
+  var meanwy = 0
+  for(var i = 0; i < lines.length; i++){
+    var tempwx = 0
+    var tempwy = 0
+   for(var j = 0; j < lines.length; j++){
+    if(Math.abs(lines[i].position.x-lines[j].position.x)<r*2  && j!=i){
+        tempwx += 1
+    };
+    if(Math.abs(lines[i].position.y-lines[j].position.y)<r*2  && j!=i){
+        tempwy += 1
+    };
+    };
+    wx.push(tempwx);
+    meanwx += tempwx;
+    wy.push(tempwy);
+    meanwy += tempwy;
+    }
+meanwx = meanwx/wx.length;
+meanwy = meanwx/wy.length;
+
+  for(var i = 0; i < lines.length; i++){
+   for(var j = i+1; j < lines.length; j++){
+    if(Math.abs(lines[i].position.x-lines[j].position.x)<r*2  && j!=i){
+      var dis = (lines[i].position.x-lines[j].position.x);
+      var hi = Math.max(0, (wx[i]-meanwx));
+      var hj = Math.max(0, (wx[j]-meanwx));
+      linevx[i] += a * (hi+hj) * dis;
+      // linevx[i] = 0.95 * linevx[i];
+      linevx[j] -= a * (hi+hj) * dis;
+      // linevx[j] = 0.95 * linevx[j];
+    }
+    if(Math.abs(lines[i].position.y-lines[j].position.y)<r*2  && j!=i){
+      var dis = (lines[i].position.y-lines[j].position.y);
+      var hi = Math.max(0, (wy[i]-meanwy));
+      var hj = Math.max(0, (wy[j]-meanwy));
+      linevy[i] += a * (hi+hj) * dis;
+      // linevy[i] = 0.95 * linevy[i];
+      linevy[j] -=  a * (hi+hj) * dis;
+      // linevy[j] = 0.95 * linevy[j];
+      }
+   }
+  }
+
+            geometry.verticesNeedUpdate = true
+            geometry.dynamic = true
+            renderer.render(scene, camera);
+            TWEEN.update();
+        }
+
+        function threeStart() {
+            initThree();
+            initCamera();
+            initScene();
+            initLight();
+            initObject();
+            // renderer.clear();
+            // renderer.render(scene, camera);
+            anime();
+            stats.update();
+        }
+
+</script>
+</head>
+<body onload="threeStart();">
+    <div id="canvas-frame"></div>
+</body>
+
+</html>

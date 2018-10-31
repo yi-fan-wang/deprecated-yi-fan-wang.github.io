@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <script type="text/javascript" src="webgl-utils.js"></script>
+    <script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>
+    <script src="https://raw.github.com/mrdoob/stats.js/master/build/stats.min.js"></script>
+    <script src="Tween.js"></script>
+    <meta charset="UTF-8">
+    <title>WebGL</title>
+<style type="text/css">
+    div#canvas-frame {
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        height: 900px;
+        background-color: #EEEEEE;
+    }
+
+</style>
+<!--     <canvas id="canvas"  style="display:block;margin:0px auto;width:100%;height:100%;"></canvas> -->
+<script>
+        var scene;
+        function initScene() {
+            scene = new THREE.Scene();
+        }
+
+        var light;
+        function initLight() {
+            light = new THREE.AmbientLight(0x655ea6,1);
+            light.position.set(0, 300, 0);
+            scene.add(light);
+            light = new THREE.PointLight(0xfd8d3c,1);
+            light.position.set(100, -300, 0);
+            scene.add(light);
+        }
+
+        var camera;
+        function initCamera() {
+            camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+            camera.position.x = 210;
+            camera.position.y = 210;
+            camera.position.z = 1000;
+            camera.up.x = 0;
+            camera.up.y = 0;
+            camera.up.z = 0;
+            camera.lookAt({
+                x : 0,
+                y : 0,
+                z : 0
+            });
+        }
+
+        // var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+        var renderer;
+        var stats;
+        function initThree() {
+            width = document.getElementById('canvas-frame').clientWidth;
+            height = document.getElementById('canvas-frame').clientHeight;
+            renderer = new THREE.WebGLRenderer({
+                antialias : true
+            });
+            renderer.setSize(width, height);
+            document.getElementById('canvas-frame').appendChild(renderer.domElement);
+            renderer.setClearColor(0xFFFFFF, 1.0);
+            stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            document.getElementById('canvas-frame').appendChild(stats.domElement);
+        }
+
+        // var renderer = new THREE.WebGLRenderer();
+        // renderer.setSize(window.innerWidth, window.innerHeight);
+        // document.body.appendChild(renderer.domElement);
+        var cubes=[];
+        var cube;
+        var line;
+        var p1
+        function initObject() {
+
+            var geometry = new THREE.Geometry();
+            geometry.verticesNeedUpdate = true
+            // var material = new THREE.LineBasicMaterial( { vertexColors: true}, {Linewidth:1} );
+            var mat = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors, side: THREE.DoubleSide})
+            var color1 = new THREE.Color( 0xfd8d3c ), color2 = new THREE.Color( 0x509ca0 ), color3 = new THREE.Color( 0x655ea6 );
+            // 线的材质可以由2点的颜色决定
+            p1 = new THREE.Vector3( -300, 0, 0 );
+            var p2 = new THREE.Vector3(  -100, 0, 0 );
+            var p3 = new THREE.Vector3(  -100, 100, 200 );
+            geometry.vertices.push(p1);
+            geometry.vertices.push(p2);
+            geometry.vertices.push(p3);
+            var face = new THREE.Face3(0, 1, 2);
+            face.vertexColors.push(color1)
+            face.vertexColors.push(color2)
+            face.vertexColors.push(color3)
+            geometry.faces.push(face);
+            geometry.computeFaceNormals();
+            // geometry.colors.push( color1, color2 );
+            var mesh= new THREE.Mesh( geometry, mat);
+            scene.add(mesh);
+
+            for ( var i = 0; i <= 6; i ++ ) {
+            for ( var j = 0; j <= 6; j ++ ) {
+            var geometry1 = new THREE.CubeGeometry(30,30,30,4,4);
+            var material1 = new THREE.MeshLambertMaterial({color: 0xffffff}, {opacity: 0.25});
+            cube = new THREE.Mesh(geometry1, material1); 
+            cube.position.set(0+i*60,0+j*60,0);
+            scene.add(cube);
+            cubes.push(cube)
+            }
+            }
+            // camera.position.z = 5;
+        }
+
+        function initTween()
+        {
+            new TWEEN.Tween(line.position)
+                    .to( { x: -220 }, 3000 ).repeat( Infinity ).start();
+        }
+
+        function anime() {
+            requestAnimationFrame(anime);
+            for ( var i = 0; i <= 49-1; i ++ ) {
+            // p1.x += 1;
+            // p1.y += 1;
+            cubes[i].rotation.x += 0.01+0.00001*i;
+            cubes[i].rotation.y += 0.01+0.00001*i;
+            }
+            renderer.render(scene, camera);
+            TWEEN.update();
+        }
+
+        function threeStart() {
+            initThree();
+            initCamera();
+            initScene();
+            initLight();
+            initObject();
+            // renderer.clear();
+            // renderer.render(scene, camera);
+            anime();
+            stats.update();
+        }
+
+</script>
+</head>
+<body onload="threeStart();">
+    <div id="canvas-frame"></div>
+</body>
+
+</html>

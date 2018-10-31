@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <canvas id="canvas"  style="display:block;margin:50px auto;"></canvas>
+
+<script>
+  var balls=[];
+  var ballsadd = 0
+  var addrad = 2
+  const colors = ["#354a82","#c93a59"]
+	window.onload=function(){
+		var canvas=document.getElementById("canvas");
+
+		canvas.width=1200;
+		canvas.height=800;
+
+		var context=canvas.getContext("2d");
+		setInterval(
+			function(){
+        render(context);
+				update()
+			},
+			50
+		)
+	}
+
+	function update(){
+  ballsadd = (1 + ballsadd)%10
+  if(balls.length < 400 && balls.length%2 == 0){addBalls(colors[0]);}
+  if(balls.length < 400 && balls.length%2 == 1){addBalls(colors[1]);}
+  for(var i = 0; i < balls.length; i++){
+		balls[i].x+=balls[i].vx;
+		balls[i].y+=balls[i].vy;
+		balls[i].vy+=balls[i].g;
+
+    if(balls[i].y>=canvas.height-balls[i].r){
+			balls[i].y=canvas.height-balls[i].r
+			balls[i].vy=-0.9*balls[i].vy
+		}
+		if(balls[i].x>=canvas.width-balls[i].r){
+			balls[i].x=canvas.width-balls[i].r
+			balls[i].vx=-0.9*balls[i].vx
+		}
+		if(balls[i].y<=balls[i].r){
+			balls[i].y=balls[i].r
+			balls[i].vy=-0.9*balls[i].vy
+		}
+		if(balls[i].x<=balls[i].r){
+			balls[i].x=balls[i].r
+			balls[i].vx=-0.9*balls[i].vx
+		}
+	}
+
+	var cnt = 0
+	for(var i=0;i<balls.length;i++)
+		if(balls[i].x+balls[i].r>0 && balls[i].x- balls[i].r <canvas.width)
+			balls[cnt++]=balls[i]
+
+	while(balls.length>cnt){
+		balls.pop();
+	}
+  for(var i = 0; i < balls.length; i++){
+   for(var j = i+1; j < balls.length; j++){
+    if(Math.pow((balls[i].x-balls[j].x),2)+Math.pow((balls[i].y-balls[j].y),2)<Math.pow((balls[i].r+balls[j].r),2)){
+      var dis2 = Math.sqrt(Math.pow((balls[i].x-balls[j].x),2)+Math.pow((balls[i].y-balls[j].y),2))
+      balls[i].x = balls[i].x+(balls[i].r+balls[j].r-dis2)*balls[i].r/(balls[i].r+balls[j].r)*(balls[i].x-balls[j].x)/dis2
+      balls[i].y = balls[i].y+(balls[i].r+balls[j].r-dis2)*balls[i].r/(balls[i].r+balls[j].r)*(balls[i].y-balls[j].y)/dis2
+      balls[j].x = balls[j].x+(balls[i].r+balls[j].r-dis2)*balls[j].r/(balls[i].r+balls[j].r)*(balls[j].x-balls[i].x)/dis2
+      balls[j].y = balls[j].y+(balls[i].r+balls[j].r-dis2)*balls[j].r/(balls[i].r+balls[j].r)*(balls[j].y-balls[i].y)/dis2
+      dis2 = Math.sqrt(Math.pow((balls[i].x-balls[j].x),2)+Math.pow((balls[i].y-balls[j].y),2))
+      var ix = (balls[j].vx*(balls[j].x-balls[i].x)+balls[j].vy*(balls[j].y-balls[i].y))/dis2
+      var iy = (balls[i].vx*(balls[i].y-balls[j].y)+balls[i].vy*(balls[j].x-balls[i].x))/dis2
+      var jx = (balls[i].vx*(balls[j].x-balls[i].x)+balls[i].vy*(balls[j].y-balls[i].y))/dis2
+      var jy = (balls[j].vx*(balls[i].y-balls[j].y)+balls[j].vy*(balls[j].x-balls[i].x))/dis2
+      var sinphi = (balls[j].y-balls[i].y)/dis2
+      var cosphi = (balls[j].x-balls[i].x)/dis2
+      balls[i].vx =ix*cosphi - iy*sinphi
+      balls[i].vy =ix*sinphi + iy*cosphi
+      balls[j].vx =jx*cosphi - jy*sinphi
+      balls[j].vy =jx*sinphi + jy*cosphi
+    }
+   }
+  }
+
+  }
+
+  function addBalls(cl){
+     var aBall={
+	x:Math.random()*1200,
+	y:Math.random()*800,
+	g:1,
+	vx:Math.pow(-1, Math.ceil(Math.random()*10))*8,
+	vy:Math.pow(-1, Math.ceil(Math.random()*10))*8,
+              r:7,
+	//color:colors[ Math.floor( Math.random()* colors.length ) ]
+              color:cl
+		}
+     balls.push(aBall)
+  }
+
+  function render(cxt){
+    cxt.clearRect(0,0,cxt.canvas.width,cxt.canvas.height)
+  for(var i=0;i<balls.length;i++){
+		cxt.fillStyle=balls[i].color;
+		cxt.beginPath();
+		cxt.arc(balls[i].x,balls[i].y,balls[i].r,0,2*Math.PI,true);
+    // cxt.strokeStyle=balls[i].color;
+    // if(i%2 == 0){cxt.arc(balls[i].x,balls[i].y,balls[i].r,0,2*Math.PI,true)};
+    // if(i%2 == 1){cxt.arc(balls[i].x,balls[i].y,balls[i].r,0,2*Math.PI,false)};
+		cxt.closePath();
+		cxt.fill();
+	}
+}
+
+</script>
+</body>
+</html>
