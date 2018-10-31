@@ -245,7 +245,7 @@ padding-top: 0px;
 .st-circle {
 width: 100%;/*300px;*/
 height: 100%;
-background-image:url('photo.jpg');
+background-image:url('photo.jpg')fixed;
 position: absolute;
 right:10%;
 top:35%;
