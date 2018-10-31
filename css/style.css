@@ -243,21 +243,24 @@ opacity: 1;
 padding-top: 0px;
 }*/
 .st-circle {
-width: 300px;
-height: 300px;
-background-image:url('elsem1.jpg');
+width: 100%;/*300px;*/
+height: 100%;
+background-image:url('photo.jpg')fixed 100% 100%;
 position: absolute;
 right:10%;
 top:35%;
+
+/*
+-ms-border-radius: 200px;
+border-radius: 200px;
 margin-bottom: -200px;
 -moz-border-radius: 200px;
 -webkit-border-radius: 200px;
 -o-border-radius: 200px;
--ms-border-radius: 200px;
-border-radius: 200px;
+
 text-shadow:1px 1px 1px rgba(151,24,64,0.2);
 opacity: 1;
-z-index: 10;
+z-index: 10;*/
 }
 
 .st-panel h2{
@@ -288,7 +291,7 @@ z-index: 10;
 .st-scroll #st-panel-4 h2,
 .st-scroll #st-panel-5 h2{
 	left:40%;
-	top: 8%;
+	top: 80%;
 	text-align: left;
 }
 
